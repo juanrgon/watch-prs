@@ -23,8 +23,6 @@ func loadConfig() config {
 		fmt.Print(fileErr)
 	}
 
-	fmt.Println(b)
-
 	var configuration config
 	jsonErr := json.Unmarshal(b, &configuration)
 	if jsonErr != nil {
