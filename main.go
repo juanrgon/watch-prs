@@ -26,7 +26,7 @@ func main() {
 		fmt.Println(separator)
 		fmt.Println(clearTerminalSequence)
 		printPullStatuses(githubClient, org, repo, pulls)
-		countDownTillNextRefresh(3)
+		countDownTillNextRefresh(30)
 		separator = fmt.Sprintf("(%v) %v", time.Now().Format(time.Kitchen), "==========================================================================")
 	}
 }
