@@ -16,22 +16,17 @@ func overwriteLine(text string) {
 }
 
 func printPullStatuses(client *github.Client, org string, repo string, pulls []*github.PullRequest) {
-	for {
-		fmt.Println(clearTerminalSequence)
-		for _, pull := range pulls {
-			branch := pull.GetHead()
-			status := GetPullRequestCombinedStatus(client, org, repo, branch)
-			success := "success"
-			fmt.Printf("%v: %s %s\n", coloredState(*status.State), branch.GetRef(), prism.InMagenta(pull.GetHTMLURL()))
-			if status.State != &success {
-				for _, status := range status.Statuses {
-					fmt.Printf("    %v: %v\n", coloredState(*status.State), prism.InCyan(*status.TargetURL))
-				}
+	for _, pull := range pulls {
+		branch := pull.GetHead()
+		status := GetPullRequestCombinedStatus(client, org, repo, branch)
+		success := "success"
+		fmt.Printf("%v: %s %s\n", coloredState(*status.State), branch.GetRef(), prism.InMagenta(pull.GetHTMLURL()))
+		if status.State != &success {
+			for _, status := range status.Statuses {
+				fmt.Printf("    %v: %v\n", coloredState(*status.State), prism.InCyan(*status.TargetURL))
 			}
-			fmt.Println()
 		}
-		countDownTillNextRefresh(30)
-		fmt.Println("=========================================")
+		fmt.Println()
 	}
 }
 
@@ -53,4 +48,5 @@ func countDownTillNextRefresh(s int) {
 		overwriteLine(message)
 		time.Sleep(1000 * time.Millisecond)
 	}
+	overwriteLine("Refreshing")
 }
