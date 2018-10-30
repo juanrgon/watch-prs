@@ -58,9 +58,9 @@ func getPullRequests(gh *github.Client, org string, repo string, filters *pullRe
 		}
 
 		for _, pull := range pulls {
-			if pull.GetAssignee().GetLogin() == filters.Assignee {
+			if filters.Assignee != "" && pull.GetAssignee().GetLogin() == filters.Assignee {
 				filteredPulls = append(filteredPulls, pull)
-			} else if pull.GetUser().GetLogin() == filters.Owner {
+			} else if filters.Owner != "" && pull.GetUser().GetLogin() == filters.Owner {
 				filteredPulls = append(filteredPulls, pull)
 			}
 		}

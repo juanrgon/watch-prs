@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"time"
 )
 
@@ -14,8 +15,28 @@ func main() {
 
 	separator := ""
 	for {
-		pullFilters := pullRequestFilters{Owner: username, Assignee: username}
-		pulls := getPullRequests(githubClient, org, repo, &pullFilters)
+		var oc bool
+		var oa bool
+		for _, a := range os.Args[1:] {
+			if a == "--only-created" {
+				oc = true
+			}
+			if a == "--only-assigned" {
+				oa = true
+			}
+		}
+
+		var pf pullRequestFilters
+		if oc {
+			pf.Owner = username
+		} else if oa {
+			pf.Assignee = username
+		} else {
+			pf.Owner = username
+			pf.Assignee = username
+		}
+
+		pulls := getPullRequests(githubClient, org, repo, &pf)
 
 		// TODO: See if this can be wrapped in a decorator
 		fmt.Println(separator)
