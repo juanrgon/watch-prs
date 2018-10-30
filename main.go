@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"os"
 	"time"
 )
 
@@ -16,11 +15,7 @@ func main() {
 	separator := ""
 	for {
 		pullFilters := pullRequestFilters{Owner: username, Assignee: username}
-		pulls, err := getPullRequests(githubClient, org, repo, &pullFilters)
-		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
-		}
+		pulls := getPullRequests(githubClient, org, repo, &pullFilters)
 
 		// TODO: See if this can be wrapped in a decorator
 		fmt.Println(separator)

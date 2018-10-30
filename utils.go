@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/juanrgon/prism"
 	"context"
 	"fmt"
 	"os"
@@ -14,12 +15,12 @@ import (
 func getCurrentRemoteName() (org string, repo string) {
 	localRepo, err := git.PlainOpen(".")
 	if err != nil {
-		fmt.Println("Error: ", err)
+		fmt.Println(prism.InYellow("Current directory is not a git repo."))
 		os.Exit(1)
 	}
 	origin, err := localRepo.Remote("origin")
 	if err != nil {
-		fmt.Println("Error: ", err)
+		fmt.Println(prism.InYellow("No remote set for this repo."))
 		os.Exit(1)
 	}
 	return parseRemoteURL(origin.Config().URLs[0])
@@ -45,29 +46,37 @@ type pullRequestFilters struct {
 	Owner    string
 }
 
-func getPullRequests(gh *github.Client, org string, repo string, filters *pullRequestFilters) ([]*github.PullRequest, error) {
-	pulls, _, err := gh.PullRequests.List(context.Background(), org, repo, nil)
-	if err != nil {
-		fmt.Println("Error: ", err)
-		os.Exit(1)
-	}
-	filteredPulls := []*github.PullRequest{}
-	for _, pull := range pulls {
-		if pull.GetAssignee().GetLogin() == filters.Assignee {
-			filteredPulls = append(filteredPulls, pull)
-		} else if pull.GetUser().GetLogin() == filters.Owner {
-			filteredPulls = append(filteredPulls, pull)
+func getPullRequests(gh *github.Client, org string, repo string, filters *pullRequestFilters) []*github.PullRequest {
+	var filteredPulls []*github.PullRequest
+	opts := &github.PullRequestListOptions{ListOptions: github.ListOptions{PerPage: 20}}
+	for {
+		pulls, resp, err := gh.PullRequests.List(context.Background(), org, repo, opts)
+		if err != nil {
+			fmt.Printf("%v: (%T) %v", prism.InRed("Error getting pull requests statuses from github"), err, err.Error())
+			fmt.Printf("\n\n%v: %v", "Please review instructions on creating config file:", prism.InCyan("https://github.com/juanrgon/watch-prs#create-a-config-file"))
+			os.Exit(1)
 		}
 
+		for _, pull := range pulls {
+			if pull.GetAssignee().GetLogin() == filters.Assignee {
+				filteredPulls = append(filteredPulls, pull)
+			} else if pull.GetUser().GetLogin() == filters.Owner {
+				filteredPulls = append(filteredPulls, pull)
+			}
+		}
+		if resp.NextPage == 0 {
+			break
+		}
+		opts.Page = resp.NextPage
 	}
-	return filteredPulls, nil
+	return filteredPulls
 }
 
 func getPullRequestCombinedStatus(client *github.Client, org string, repo string, branch *github.PullRequestBranch) *github.CombinedStatus {
 	noOpts := github.ListOptions{}
 	want, _, err := client.Repositories.GetCombinedStatus(context.Background(), org, repo, branch.GetSHA(), &noOpts)
 	if err != nil {
-		fmt.Println("Error: ", err)
+		fmt.Printf("%v: (%T) %v", prism.InRed("Error getting combined status of " + branch.GetRef()), err, err.Error())
 		os.Exit(1)
 	}
 	return want

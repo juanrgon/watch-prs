@@ -19,14 +19,15 @@ type githubConfig struct {
 }
 
 func loadConfig() (c config) {
-	b, err := ioutil.ReadFile(configFilePath())
+	p := configFilePath()
+	b, err := ioutil.ReadFile(p)
 	var m error
-	switch et := err.(type) {
+	switch err.(type) {
 	case nil:
 	case *os.PathError:
-		m = fmt.Errorf("\n%v: %v", prism.InRed("Could not open config file"), et.Path)
+		m = fmt.Errorf("\n%v: %v", prism.InRed("Could not open config file"), p)
 	default:
-		m = fmt.Errorf("\n%v: %v", prism.InRed("Unexpected error reading config file"), err.Error())
+		m = fmt.Errorf("\n%v: (%T) %v", prism.InRed("Unexpected error reading config file " + p), err, err.Error())
 	}
 	if err != nil {
 		fmt.Println(m)
@@ -36,12 +37,15 @@ func loadConfig() (c config) {
 	err = json.Unmarshal(b, &c)
 	switch err.(type) {
 	case nil:
+	case *json.SyntaxError:
+		m = fmt.Errorf("\n%v: %v", prism.InRed("Invalid JSON in config file " + p), err.Error())
 	default:
-		m = fmt.Errorf("\n%v: %v", prism.InRed("Unexpected error reading config file"), err.Error())
+		m = fmt.Errorf("\n%v: (%T) %v", prism.InRed("Unexpected error parsing config file " + p), err, err.Error())
 	}
 	if err != nil {
-		m := fmt.Sprintf("\nCould not open config file: %v", err.Error())
-		panic(m)
+		fmt.Println(m)
+		fmt.Printf("\n%v: %v", "Please review instructions on creating config file:", prism.InCyan("https://github.com/juanrgon/watch-prs#create-a-config-file"))
+		os.Exit(1)
 	}
 	return
 }
