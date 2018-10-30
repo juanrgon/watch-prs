@@ -35,10 +35,8 @@ func LoadConfig() (c config) {
 	}
 
 	err = json.Unmarshal(b, &c)
-	switch et = err.(type) {
+	switch err.(type) {
 		case nil:
-		case *os.PathError:
-			m = fmt.Errorf("\n%v: %v", prism.InRed("Could not open config file"), et.Path)
 		default:
 			m = fmt.Errorf("\n%v: %v", prism.InRed("Unexpected error reading config file"), err.Error())
 	}
