@@ -4,11 +4,12 @@ _A simple Pull Request CI status monitor_
 ## Usage
 To use this, just cd into a git repo and run
 ```
-watch-prs
+> watch-prs
 ```
 
 This tool will pull down the statuses of all PRs you own and are assigned to.
 
+![demo](docs/demo.png)
 
 ## Installation and Setup
 The install and setup process for this is janky. It should hopefully be improved soon.
