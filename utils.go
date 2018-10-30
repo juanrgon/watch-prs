@@ -1,11 +1,12 @@
 package main
 
 import (
-	"github.com/juanrgon/prism"
 	"context"
 	"fmt"
 	"os"
 	"regexp"
+
+	"github.com/juanrgon/prism"
 
 	"github.com/google/go-github/github"
 	"golang.org/x/oauth2"
@@ -53,7 +54,7 @@ func getPullRequests(gh *github.Client, org string, repo string, filters *pullRe
 		pulls, resp, err := gh.PullRequests.List(context.Background(), org, repo, opts)
 		if err != nil {
 			fmt.Printf("%v: (%T) %v", prism.InRed("Error getting pull requests statuses from github"), err, err.Error())
-			fmt.Printf("\n\n%v: %v", "Please review instructions on creating config file:", prism.InCyan("https://github.com/juanrgon/watch-prs#create-a-config-file"))
+			fmt.Printf("\n\n%v: %v", "Please review instructions on creating config file:", prism.InCyan("https://github.com/juanrgon/watch-prs#4-create-a-config-file"))
 			os.Exit(1)
 		}
 
@@ -76,7 +77,7 @@ func getPullRequestCombinedStatus(client *github.Client, org string, repo string
 	noOpts := github.ListOptions{}
 	want, _, err := client.Repositories.GetCombinedStatus(context.Background(), org, repo, branch.GetSHA(), &noOpts)
 	if err != nil {
-		fmt.Printf("%v: (%T) %v", prism.InRed("Error getting combined status of " + branch.GetRef()), err, err.Error())
+		fmt.Printf("%v: (%T) %v", prism.InRed("Error getting combined status of "+branch.GetRef()), err, err.Error())
 		os.Exit(1)
 	}
 	return want

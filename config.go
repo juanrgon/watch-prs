@@ -3,10 +3,11 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/juanrgon/prism"
 	"io/ioutil"
 	"os"
 	"os/user"
+
+	"github.com/juanrgon/prism"
 )
 
 type config struct {
@@ -27,7 +28,7 @@ func loadConfig() (c config) {
 	case *os.PathError:
 		m = fmt.Errorf("\n%v: %v", prism.InRed("Could not open config file"), p)
 	default:
-		m = fmt.Errorf("\n%v: (%T) %v", prism.InRed("Unexpected error reading config file " + p), err, err.Error())
+		m = fmt.Errorf("\n%v: (%T) %v", prism.InRed("Unexpected error reading config file "+p), err, err.Error())
 	}
 	if err != nil {
 		fmt.Println(m)
@@ -38,13 +39,13 @@ func loadConfig() (c config) {
 	switch err.(type) {
 	case nil:
 	case *json.SyntaxError:
-		m = fmt.Errorf("\n%v: %v", prism.InRed("Invalid JSON in config file " + p), err.Error())
+		m = fmt.Errorf("\n%v: %v", prism.InRed("Invalid JSON in config file "+p), err.Error())
 	default:
-		m = fmt.Errorf("\n%v: (%T) %v", prism.InRed("Unexpected error parsing config file " + p), err, err.Error())
+		m = fmt.Errorf("\n%v: (%T) %v", prism.InRed("Unexpected error parsing config file "+p), err, err.Error())
 	}
 	if err != nil {
 		fmt.Println(m)
-		fmt.Printf("\n%v: %v", "Please review instructions on creating config file:", prism.InCyan("https://github.com/juanrgon/watch-prs#create-a-config-file"))
+		fmt.Printf("\n%v: %v", "Please review instructions on creating config file:", prism.InCyan("https://github.com/juanrgon/watch-prs#4-create-a-config-file"))
 		os.Exit(1)
 	}
 	return
