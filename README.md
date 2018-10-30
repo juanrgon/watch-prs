@@ -7,7 +7,7 @@ To use this, just cd into a git repo and run
 watch-prs
 ```
 
-This tool will pull
+This tool will pull down the statuses of all PRs you own and are assigned to.
 
 
 ## Installation and Setup
