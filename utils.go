@@ -3,16 +3,25 @@ package main
 import (
 	"context"
 	"fmt"
+	"os"
+	"regexp"
+
 	"github.com/google/go-github/github"
 	"golang.org/x/oauth2"
 	"gopkg.in/src-d/go-git.v4"
-	"os"
-	"regexp"
 )
 
 func GetCurrentRemoteName() (org string, repo string) {
-	localRepo, _ := git.PlainOpen(".")
-	origin, _ := localRepo.Remote("origin")
+	localRepo, err := git.PlainOpen(".")
+	if err != nil {
+		fmt.Println("Error: ", err)
+		os.Exit(1)
+	}
+	origin, err := localRepo.Remote("origin")
+	if err != nil {
+		fmt.Println("Error: ", err)
+		os.Exit(1)
+	}
 	return parseRemoteURL(origin.Config().URLs[0])
 }
 
@@ -40,7 +49,7 @@ func GetPullRequests(gh *github.Client, org string, repo string, filters *PullRe
 	pulls, _, err := gh.PullRequests.List(context.Background(), org, repo, nil)
 	if err != nil {
 		fmt.Println("Error: ", err)
-		os.exit(1)
+		os.Exit(1)
 	}
 	filteredPulls := []*github.PullRequest{}
 	for _, pull := range pulls {
