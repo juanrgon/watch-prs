@@ -1,5 +1,5 @@
 # watch-prs
-_A simple Pull Request CI status monitor_
+_A simple Pull Request monitor_
 
 ## Usage
 To use this, just cd into a git repo and run
