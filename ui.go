@@ -18,7 +18,7 @@ func overwriteLine(text string) {
 func printPullStatuses(client *github.Client, org string, repo string, pulls []*github.PullRequest) {
 	for _, pull := range pulls {
 		branch := pull.GetHead()
-		status := GetPullRequestCombinedStatus(client, org, repo, branch)
+		status := getPullRequestCombinedStatus(client, org, repo, branch)
 		success := "success"
 		fmt.Printf("%v: %s %s\n", coloredState(*status.State), branch.GetRef(), prism.InMagenta(pull.GetHTMLURL()))
 		if status.State != &success {

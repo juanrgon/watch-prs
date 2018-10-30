@@ -7,16 +7,16 @@ import (
 )
 
 func main() {
-	configuration := LoadConfig()
+	configuration := loadConfig()
 	username := configuration.Github.Username
 
-	githubClient := LoadGithubClient(configuration) // TODO: Support remote repositories besides github
-	org, repo := GetCurrentRemoteName()             // TODO: Allow other repos besides the current working directory
+	githubClient := loadGithubClient(configuration) // TODO: Support remote repositories besides github
+	org, repo := getCurrentRemoteName()             // TODO: Allow other repos besides the current working directory
 
 	separator := ""
 	for {
-		pullFilters := PullRequestFilters{Owner: username, Assignee: username}
-		pulls, err := GetPullRequests(githubClient, org, repo, &pullFilters)
+		pullFilters := pullRequestFilters{Owner: username, Assignee: username}
+		pulls, err := getPullRequests(githubClient, org, repo, &pullFilters)
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)

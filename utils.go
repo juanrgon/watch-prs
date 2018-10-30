@@ -11,7 +11,7 @@ import (
 	"gopkg.in/src-d/go-git.v4"
 )
 
-func GetCurrentRemoteName() (org string, repo string) {
+func getCurrentRemoteName() (org string, repo string) {
 	localRepo, err := git.PlainOpen(".")
 	if err != nil {
 		fmt.Println("Error: ", err)
@@ -31,7 +31,7 @@ func parseRemoteURL(url string) (org string, repo string) {
 	return matches[1], matches[2]
 }
 
-func LoadGithubClient(c config) *github.Client {
+func loadGithubClient(c config) *github.Client {
 	ctx := context.Background()
 	ts := oauth2.StaticTokenSource(
 		&oauth2.Token{AccessToken: c.Github.OauthToken},
@@ -40,12 +40,12 @@ func LoadGithubClient(c config) *github.Client {
 	return github.NewClient(tc)
 }
 
-type PullRequestFilters struct {
+type pullRequestFilters struct {
 	Assignee string
 	Owner    string
 }
 
-func GetPullRequests(gh *github.Client, org string, repo string, filters *PullRequestFilters) ([]*github.PullRequest, error) {
+func getPullRequests(gh *github.Client, org string, repo string, filters *pullRequestFilters) ([]*github.PullRequest, error) {
 	pulls, _, err := gh.PullRequests.List(context.Background(), org, repo, nil)
 	if err != nil {
 		fmt.Println("Error: ", err)
@@ -63,7 +63,7 @@ func GetPullRequests(gh *github.Client, org string, repo string, filters *PullRe
 	return filteredPulls, nil
 }
 
-func GetPullRequestCombinedStatus(client *github.Client, org string, repo string, branch *github.PullRequestBranch) *github.CombinedStatus {
+func getPullRequestCombinedStatus(client *github.Client, org string, repo string, branch *github.PullRequestBranch) *github.CombinedStatus {
 	noOpts := github.ListOptions{}
 	want, _, err := client.Repositories.GetCombinedStatus(context.Background(), org, repo, branch.GetSHA(), &noOpts)
 	if err != nil {

@@ -3,12 +3,11 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/juanrgon/prism"
 	"io/ioutil"
 	"os"
 	"os/user"
-	"github.com/juanrgon/prism"
 )
-
 
 type config struct {
 	Github githubConfig `json:"github.com"`
@@ -19,15 +18,15 @@ type githubConfig struct {
 	OauthToken string `json:"oauth_token"`
 }
 
-func LoadConfig() (c config) {
+func loadConfig() (c config) {
 	b, err := ioutil.ReadFile(configFilePath())
 	var m error
 	switch et := err.(type) {
-		case nil:
-		case *os.PathError:
-			m = fmt.Errorf("\n%v: %v", prism.InRed("Could not open config file"), et.Path)
-		default:
-			m = fmt.Errorf("\n%v: %v", prism.InRed("Unexpected error reading config file"), err.Error())
+	case nil:
+	case *os.PathError:
+		m = fmt.Errorf("\n%v: %v", prism.InRed("Could not open config file"), et.Path)
+	default:
+		m = fmt.Errorf("\n%v: %v", prism.InRed("Unexpected error reading config file"), err.Error())
 	}
 	if err != nil {
 		fmt.Println(m)
@@ -36,9 +35,9 @@ func LoadConfig() (c config) {
 
 	err = json.Unmarshal(b, &c)
 	switch err.(type) {
-		case nil:
-		default:
-			m = fmt.Errorf("\n%v: %v", prism.InRed("Unexpected error reading config file"), err.Error())
+	case nil:
+	default:
+		m = fmt.Errorf("\n%v: %v", prism.InRed("Unexpected error reading config file"), err.Error())
 	}
 	if err != nil {
 		m := fmt.Sprintf("\nCould not open config file: %v", err.Error())
