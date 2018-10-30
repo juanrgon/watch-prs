@@ -39,7 +39,8 @@ type PullRequestFilters struct {
 func GetPullRequests(gh *github.Client, org string, repo string, filters *PullRequestFilters) ([]*github.PullRequest, error) {
 	pulls, _, err := gh.PullRequests.List(context.Background(), org, repo, nil)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("Error: ", err)
+		os.exit(1)
 	}
 	filteredPulls := []*github.PullRequest{}
 	for _, pull := range pulls {

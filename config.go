@@ -33,5 +33,5 @@ func LoadConfig() config {
 func configFilePath() string {
 	currentUser, _ := user.Current()
 	homeDir := currentUser.HomeDir
-	return homeDir + "/.config/watch-repos"
+	return homeDir + "/.config/watch-prs"
 }
