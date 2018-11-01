@@ -23,23 +23,44 @@ const (
 )
 
 func printPullStatuses(client *github.Client, org string, repo string, pulls []*github.PullRequest) {
+	var pendingPulls []*github.PullRequest
+	var failingPulls []*github.PullRequest
 	for _, p := range pulls {
-		url := p.GetHTMLURL()
 		branch := p.GetHead()
-		name := branch.GetRef()
 
 		ciStatus := getPullRequestCombinedStatus(client, org, repo, branch)
 		ciState := state(ciStatus.GetState())
-		mergeable := p.GetMergeable()
-
-		printPullBranch(name, url, ciState)
-		if state(ciStatus.GetState()) != success {
-			printCIStatus(ciStatus)
+		if ciState == success {
+			printPull(p, client, org, repo)
+		} else if ciState == pending {
+			pendingPulls = append(pendingPulls, p)
 		} else {
-			printPullMergeable(mergeable)
+			failingPulls = append(failingPulls, p)
 		}
-		fmt.Println()
 	}
+
+	for _, p := range pendingPulls {
+		printPull(p, client, org, repo)
+	}
+
+	for _, p := range failingPulls {
+		printPull(p, client, org, repo)
+	}
+}
+
+func printPull(p *github.PullRequest, client *github.Client, org string, repo string) {
+	url := p.GetHTMLURL()
+	branch := p.GetHead()
+	name := branch.GetRef()
+
+	ciStatus := getPullRequestCombinedStatus(client, org, repo, branch)
+	ciState := state(ciStatus.GetState())
+
+	printPullBranch(name, url, ciState)
+	if state(ciStatus.GetState()) != success {
+		printCIStatus(ciStatus)
+	}
+	fmt.Println()
 }
 
 func printPullBranch(name string, url string, ci state) {
