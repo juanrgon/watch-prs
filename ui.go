@@ -29,47 +29,41 @@ func printPullStatuses(client *github.Client, org string, repo string, pulls []*
 		name := branch.GetRef()
 
 		ciStatus := getPullRequestCombinedStatus(client, org, repo, branch)
+		ciState := state(ciStatus.GetState())
 		mergeable := p.GetMergeable()
-		var overallStatus state
-		if mergeable && state(*ciStatus.State) == success {
-			overallStatus = success
-		} else {
-			overallStatus = failure
-		}
 
-		printPullBranch(name, url, overallStatus)
-		printPullMergeable(mergeable)
-		printCIStatus(ciStatus)
+		printPullBranch(name, url, ciState)
+		if state(ciStatus.GetState()) != success {
+			printCIStatus(ciStatus)
+		} else {
+			printPullMergeable(mergeable)
+		}
 		fmt.Println()
 	}
 }
 
-func printPullBranch(name string, url string, status state) {
-	cn := coloredByState(name, status)
-	fmt.Printf("%s %s\n", cn, prism.InMagenta(url))
+func printPullBranch(name string, url string, ci state) {
+	var ciStatus prism.DecoratedString
+	if ci == success{
+		ciStatus = coloredByState("passing", success)
+	} else if ci == pending {
+		ciStatus = coloredByState("pending", pending)
+	} else {
+		ciStatus = coloredByState("failing", failure)
+	}
+	fmt.Printf("%s: %s %s\n", ciStatus, name, prism.InMagenta(url))
 }
 
 func printPullMergeable(m bool) {
-	s := "mergeable"
-	if m {
-		s = string(prism.InGreen(s))
-	} else {
-		s = string(prism.InRed(s))
+	if !m {
+		s := string(prism.InRed("merge conflict or failed review"))
+		fmt.Printf("    %s\n", s)
 	}
-	fmt.Printf("    %s\n", s)
 }
 
 func printCIStatus(s *github.CombinedStatus) {
-	header := "ci-status"
-	combinedState := state(*s.State)
-
-	if state(combinedState) == success {
-		fmt.Printf("    %s\n", coloredByState(header, success))
-	}else{
-		fmt.Printf("    %s:\n", coloredByState(header, combinedState))
-		for _, status := range s.Statuses {
-			fmt.Printf("        %v: %v\n", coloredState(*status.State), prism.InCyan(*status.TargetURL))
-		}
+	for _, status := range s.Statuses {
+		fmt.Printf("    %v: %v\n", coloredState(*status.State), prism.InCyan(*status.TargetURL))
 	}
 }
 
