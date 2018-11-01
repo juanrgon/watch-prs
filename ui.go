@@ -16,6 +16,7 @@ func overwriteLine(text string) {
 }
 
 type state string
+
 const (
 	success state = state("success")
 	pending state = state("pending")
@@ -65,7 +66,7 @@ func printPull(p *github.PullRequest, client *github.Client, org string, repo st
 
 func printPullBranch(name string, url string, ci state) {
 	var ciStatus prism.DecoratedString
-	if ci == success{
+	if ci == success {
 		ciStatus = coloredByState("passing", success)
 	} else if ci == pending {
 		ciStatus = coloredByState("pending", pending)
