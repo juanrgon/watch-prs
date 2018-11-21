@@ -73,7 +73,8 @@ func printPullBranch(name string, url string, ci state) {
 	} else {
 		ciStatus = coloredByState("failing", failure)
 	}
-	fmt.Printf("%s: %s %s\n", ciStatus, name, prism.InMagenta(url))
+	fmt.Println(prism.InMagenta(url))
+	fmt.Printf("%s: %s \n", ciStatus, name)
 }
 
 func printPullMergeable(m bool) {
