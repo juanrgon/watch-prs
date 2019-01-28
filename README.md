@@ -71,5 +71,5 @@ You need to create a `~/.config/watch-prs` file. Review https://github.com/juanr
 #### Invalid JSON in config file /Users/juangonzalez/.config/watch-prs
 Your config file most likely has a typo. Review https://github.com/juanrgon/watch-prs#4-create-a-config-file
 
-### Error getting pull requests statuses from github
+#### Error getting pull requests statuses from github
 Most likely, you have entered the wrong github username or OAuth token in your config file.  Review https://github.com/juanrgon/watch-prs#4-create-a-config-file
