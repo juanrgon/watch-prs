@@ -3,7 +3,9 @@ package main
 import (
 	"fmt"
 	"os"
+	"strconv"
 	"time"
+
 )
 
 func main() {
@@ -17,16 +19,27 @@ func main() {
 	for {
 		var oc bool
 		var oa bool
-		for _, a := range os.Args[1:] {
+		var ri int
+		ri = 30
+		for i, a := range os.Args[1:] {
 			if a == "--only-created" {
 				oc = true
 			}
 			if a == "--only-assigned" {
 				oa = true
 			}
+
+			if a == "--refresh" {
+				val, err := strconv.Atoi(os.Args[i + 2])
+				if err != nil {
+					fmt.Printf("Invalid --refresh value: %v", os.Args[i+2])
+					os.Exit(1)
+				}
+				ri = val
+			}
 		}
 
-		var pf pullRequestFilters
+	var pf pullRequestFilters
 		if oc {
 			pf.Owner = username
 		} else if oa {
@@ -42,7 +55,7 @@ func main() {
 		fmt.Println(separator)
 		fmt.Println(clearTerminalSequence)
 		printPullStatuses(githubClient, org, repo, pulls)
-		countDownTillNextRefresh(30)
+		countDownTillNextRefresh(ri)
 		separator = fmt.Sprintf("(%v) %v", time.Now().Format(time.Kitchen), "==========================================================================")
 	}
 }
