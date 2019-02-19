@@ -64,6 +64,7 @@ Below are step-by-step instructions on how to do this.
 ```
 
 - f. For security, restrict the access privileges of this file by running `chmod 0600 ~/.config/watch-prs` in the terminal
+- g. For extra security, change this access token often
 
 ## Uninstalling
 
